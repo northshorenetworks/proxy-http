@@ -62,11 +62,9 @@ app.callback = function (ip) {
   let middleware = [respond].concat(this.middleware);
   let fn = co.wrap(compose(middleware));
 
-  if (ip) { console.log('https request'); }
-
   return function(req, res) {
     debug('Received request');
-    console.log(req.connection.remoteAddress);
+    req.type = (ip) ? 'https' : 'http';
     req.ip = ip || req.connection.remoteAddress;
     let ctx = self.createContext(req, res);
     fn.call(ctx).catch(ctx.onerror);
@@ -195,9 +193,22 @@ app.createContext = function(req, res) {
 
 function *respond(next) {
   yield *next;
+  let self = this;
+  let req = this.req;
+  let res = this.res;
+  let type = this.req.type;
+  let protocol = (type === 'http') ? http : https;
+  let request = protocol.request({
+    host: req.headers.host,
+    port: (type === 'http') ? 80 : 443,
+    path: self.path,
+    headers: req.headers 
+  }, function (response) {
+    response.pipe(res);
+  });
 
-  this.res.end('ok!');
-  // pass request through
+  req.pipe(request);
+  request.end();
 }
 
 function getSNI (buffer) {
