@@ -10,9 +10,9 @@ let os = require('os');
 let randomBytes = require('crypto').randomBytes;
 let co = require('co');
 let compose = require('koa-compose');
-let SSLGenerator = require('ssl-generator');
-let debug = require('debug')('proxy:http');
-let context = require('./lib/context');
+let SSLGenerator = require('../ssl-generator');
+let debug = require('debug')('../proxy:http');
+let context = require('../lib/context');
 
 let app = ProxyHTTP.prototype;
 
