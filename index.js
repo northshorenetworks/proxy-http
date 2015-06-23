@@ -76,7 +76,7 @@ app.onConnect = function () {
   return function (req, socket, head) {
     debug('Connect event');
     let domain = req.url.split(':')[0];
-    debug(`Retrieving SSL cert & key for ${domain}`)
+    debug("Retrieving SSL cert & key for ${domain}")
     self.sslGenerator.selfSigned(domain, self.proxyToHttps(req, socket, head));
   };
 };
@@ -93,9 +93,9 @@ app.onUpgrade = function () {
         port: port,
         hostname: hostname
       }, function () {
-        client.write(`GET ${path} HTTP/1.1\r\n`);
+        client.write("GET ${path} HTTP/1.1\r\n");
         Object.keys(req.headers).map(function (key) {
-          client.write(`${key}: ${req.headers[key]}\r\n`);
+          client.write("${key}: ${req.headers[key]}\r\n");
         });
         client.write('\r\n');
         socket.on('data', function (chunk) { client.write(chunk); });
@@ -140,7 +140,7 @@ app.proxyToHttps = function (req, socket, head, initialData) {
       });
     });
     server.listen(socketPath, function () {
-      debug(`temporary https server listening at ${socketPath}`)
+      debug("temporary https server listening at ${socketPath}")
     });
 
     proxy.connect(server._pipeName, function () {
@@ -148,7 +148,7 @@ app.proxyToHttps = function (req, socket, head, initialData) {
         proxy.write(initialData);
       } else {
         proxy.write(head);
-        socket.write(`HTTP/${version} 200 Connection established\r\n\r\n`);
+        socket.write("HTTP/${version} 200 Connection established\r\n\r\n");
       }
     });
     // TODO: check if pipe works instead
